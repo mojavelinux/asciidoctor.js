@@ -1,15 +1,42 @@
-data = <<EOS
+source_extension = <<EOS
+= Extension example
+
+.Example Diagram
+[dot]
+----
+"Graph" [fillcolor="NODEHIGHLIGHT"]
+"Graph" -> Nodes [label="records data in", weight=2.0]
+"Graph" -> Relationships [label="records data in", weight=2.0]
+Relationships -> Nodes [label="organize"]
+Labels -> Nodes [label="group"]
+Nodes -> Properties [label="have"]
+Relationships -> Properties [label="have"]
+----
+EOS
+
+source_include = <<EOS
+= Include example
+
+* one
+* two
+* three
+
+Let's include content...
+
+[indent=0]
+....
+include::content.adoc[lines=1..2;12]
+....
+
+That was included content.
+EOS
+
+source_quick_reference = <<EOS
 = AsciiDoc Syntax Quick Reference
 Dan Allen; Sarah White
 v1.0.3, 2013-08-27
-:awestruct-layout: base
-:awestruct-javascripts: [view-result]
 :description: This guide is a quick reference for the common formatting markup and document elements in the AsciiDoc syntax.
 :keywords: AsciiDoc, Asciidoctor, syntax, reference, cheatsheet
-:imagesdir: ../images
-:includedir: _includes
-//:toc:
-//:toc-placement!:
 :experimental:
 :table-caption!:
 :example-caption!:
@@ -2464,13 +2491,22 @@ To learn more about Asciidoctor and its capabilities, check out the other {docre
 Also, don't forget to join the {mailinglist}[Asciidoctor mailing list], where you can ask questions and leave comments.
 EOS
 
-require "native"
+require 'native'
 $global.addEventListener 'DOMContentLoaded', proc {
-  ENV['HOME'] = File.dirname $global.window.location.href
-  monitor = {}
-  html = Asciidoctor.render(data, :safe => :safe, :attributes => %w(showtitle sectanchors imagesdir=./images), :monitor => monitor)
+  base_dir = File.dirname $global.window.location.href
+  ENV['HOME'] = base_dir
+  html = Asciidoctor.render source_quick_reference, :base_dir => base_dir, :safe => :safe, :attributes => %w(showtitle sectanchors imagesdir=./images), :monitor => (monitor = {})
   puts %(Time to parse: #{"%0.5f" % monitor[:parse]})
   puts %(Time to render: #{"%0.5f" % monitor[:render]})
   puts %(Total time elapsed: #{"%0.5f" % monitor[:load_render]})
   $global.document.getElementById('content').innerHTML = html
+  #%x{
+  #  diagrams = document.getElementsByClassName('dotdiagram');
+  #  for (var i = 0, len = diagrams.length; i < len; i++) {
+  #    tag = diagrams[i];
+  #    if (tag.getAttribute('type') == 'text/vnd.graphviz') {
+  #      tag.outerHTML = Viz(tag.innerHTML, 'svg');
+  #    }
+  #  }
+  #}
 }, false

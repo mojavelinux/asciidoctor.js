@@ -188,6 +188,8 @@ Here's a list of some of the changes that are currently needed:
 * A shim library is needed to implement missing classes in Opal, such as +Set+ and +File+
 * All mutable String operations have been replaced with assignments
 ** JavaScript doesn't support mutable strings
+* `$~[0]` used in place of `$&` and `$~[n]` in place of `$n` after running a regular expression (where n is 1, 2, 3...)
+* +Set+ is missing difference and union operations
 * ...
 
 == Debugging

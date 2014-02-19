@@ -25,11 +25,15 @@ task :dist do
   env.js_compressor = Sprockets::ClosureCompressor if minify
   env['opal'].write_to "build/opal.js#{compress ? '.gz' : nil}"
 
+  # Use use_gem if you want to build against a release
+  # If the Gemfile points to a git repo or local directory, use `bundle exec rake dist`
   env.use_gem 'asciidoctor'
   # Use append_path if you want to build against a local checkout
-  #env.append_path 'asciidoctor'
+  #env.append_path 'asciidoctor/lib'
+
   env.append_path 'templates'
   env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
+  env['asciidoctor/extensions'].write_to "build/asciidoctor_extensions.js#{compress ? '.gz' : nil}"
 end
 
 desc 'Build asciidoctor_example.js to build/'
@@ -41,6 +45,7 @@ task :examples => :dist do
 
   env = Opal::Environment.new
   env.append_path 'examples'
+  env['asciidoctor_dot_extension'].write_to 'build/asciidoctor_dot_extension.js'
   env['asciidoctor_example'].write_to 'build/asciidoctor_example.js'
 
   File.copy_stream 'examples/asciidoctor_example.html', 'build/asciidoctor_example.html'
